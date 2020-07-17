@@ -21,7 +21,16 @@
     <p>Aquí nuestras últimas publicaciones:</p>
 
     <div class="row">
+      <div class="col-sm-12">
+        <form class="buscador" action="/">
+          <label for="busqueda">Buscar publicación</label>
+          <input type="text" id="busqueda" name="busqueda" value="<%= busqueda %>"/>
+          <button type="submit"><span class="icon-search"></span>Buscar</button>
+        </form>
+      </div>
+    </div>
 
+    <div class="row">
       <% publicaciones.forEach(publicacion => { %>
       <div class="col-sm-12">
         <div class="card fluid ">
@@ -43,6 +52,17 @@
       </div>
       <% }) %>
 
+    </div>
+
+    <div class="row">
+      <div class="col-sm-12">
+        <p class="centrado">
+          <a href="/?pagina=<%=pagina-1%>"><< Anterior</a>
+          |
+          <a href="/?pagina=<%=pagina+1%>">Siguiente >>
+          </a>
+        </p>
+      </div>
     </div>
 
   </div>
