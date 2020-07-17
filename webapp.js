@@ -42,61 +42,98 @@ aplicacion.get('/registro', function (peticion, respuesta) {
     respuesta.render('registro', { mensaje: peticion.flash('mensaje') })
   })
   
-  aplicacion.post('/procesar_registro', function (peticion, respuesta) {
-    pool.getConnection(function (err, connection) {
-  
-      const email = peticion.body.email.toLowerCase().trim()
-      const pseudonimo = peticion.body.pseudonimo.trim()
-      const contrasena = peticion.body.contrasena
-  
-      const consultaEmail = `
-        SELECT *
-        FROM autores
-        WHERE email = ${connection.escape(email)}
-      `
-  
-      connection.query(consultaEmail, function (error, filas, campos) {
-        if (filas.length > 0) {
-          peticion.flash('mensaje', 'Email duplicado')
-          respuesta.redirect('/registro')
-        }
-        else {
-  
-          const consultaPseudonimo = `
-            SELECT *
-            FROM autores
-            WHERE pseudonimo = ${connection.escape(pseudonimo)}
-          `
-  
-          connection.query(consultaPseudonimo, function (error, filas, campos) {
-            if (filas.length > 0) {
-              peticion.flash('mensaje', 'Pseudonimo duplicado')
+aplicacion.post('/procesar_registro', function (peticion, respuesta) {
+  pool.getConnection(function (err, connection) {
+
+    const email = peticion.body.email.toLowerCase().trim()
+    const pseudonimo = peticion.body.pseudonimo.trim()
+    const contrasena = peticion.body.contrasena
+
+    const consultaEmail = `
+      SELECT *
+      FROM autores
+      WHERE email = ${connection.escape(email)}
+    `
+
+    connection.query(consultaEmail, function (error, filas, campos) {
+      if (filas.length > 0) {
+        peticion.flash('mensaje', 'Email duplicado')
+        respuesta.redirect('/registro')
+      }
+      else {
+
+        const consultaPseudonimo = `
+          SELECT *
+          FROM autores
+          WHERE pseudonimo = ${connection.escape(pseudonimo)}
+        `
+
+        connection.query(consultaPseudonimo, function (error, filas, campos) {
+          if (filas.length > 0) {
+            peticion.flash('mensaje', 'Pseudonimo duplicado')
+            respuesta.redirect('/registro')
+          }
+          else {
+
+            const consulta = `
+                                INSERT INTO
+                                autores
+                                (email, contrasena, pseudonimo)
+                                VALUES (
+                                  ${connection.escape(email)},
+                                  ${connection.escape(contrasena)},
+                                  ${connection.escape(pseudonimo)}
+                                )
+                              `
+            connection.query(consulta, function (error, filas, campos) {
+              peticion.flash('mensaje', 'Usuario registrado')
               respuesta.redirect('/registro')
-            }
-            else {
-  
-              const consulta = `
-                                  INSERT INTO
-                                  autores
-                                  (email, contrasena, pseudonimo)
-                                  VALUES (
-                                    ${connection.escape(email)},
-                                    ${connection.escape(contrasena)},
-                                    ${connection.escape(pseudonimo)}
-                                  )
-                                `
-              connection.query(consulta, function (error, filas, campos) {
-                peticion.flash('mensaje', 'Usuario registrado')
-                respuesta.redirect('/registro')
-              })
-            }
-          })
-        }
-      })
-      connection.release()
+            })
+          }
+        })
+      }
     })
+    connection.release()
   })
+})
+
+aplicacion.get('/inicio', function (peticion, respuesta) {
+  respuesta.render('inicio', { mensaje: peticion.flash('mensaje') })
+})
   
+  
+aplicacion.post('/procesar_inicio', function (peticion, respuesta) {
+  pool.getConnection(function (err, connection) {
+    const consulta = `
+      SELECT *
+      FROM autores
+      WHERE
+      email = ${connection.escape(peticion.body.email)} AND
+      contrasena = ${connection.escape(peticion.body.contrasena)}
+    `
+    connection.query(consulta, function (error, filas, campos) {
+      if (filas.length > 0) {
+        peticion.session.usuario = filas[0]
+        respuesta.redirect('/admin/index')
+      }
+      else {
+        peticion.flash('mensaje', 'Datos inválidos')
+        respuesta.redirect('/inicio')
+      }
+
+    })
+    connection.release()
+  })
+})
+
+aplicacion.get('/admin/index', function (peticion, respuesta) {
+  respuesta.render('admin/index', { usuario: peticion.session.usuario, mensaje: peticion.flash('mensaje') })
+})
+
+aplicacion.get('/procesar_cerrar_sesion', function (peticion, respuesta) {
+  peticion.session.destroy();
+  respuesta.redirect("/")
+});
 
 aplicacion.listen(8080, function(){
   console.log("Servidor iniciado")
