@@ -19,7 +19,7 @@
     <img src="/img/fondo.jpg" width="100%">
     <h1>Inicio</h1>
     <p>Aquí nuestras últimas publicaciones:</p>
-
+    <!--SECCION DE BUSCAR-->
     <div class="row">
       <div class="col-sm-12">
         <form class="buscador" action="/">
@@ -29,21 +29,20 @@
         </form>
       </div>
     </div>
-
+    <!--SECCION DONDE SE MUESTRAN LAS PUBLICACIONES-->
     <div class="row">
+
       <% publicaciones.forEach(publicacion => { %>
       <div class="col-sm-12">
         <div class="card fluid ">
-          <h3 class="section"><a href="#">
+          <h3 class="section"><a href="/publicacion/<%=publicacion.id%>">
               <%=publicacion.titulo%></a> <mark class="tag">
               <%=publicacion.votos%></mark></h3>
           <h6 class="section dark">
             <span class="icon-user"></span>
             <%=publicacion.pseudonimo%> -
             <span class="icon-calendar"></span>
-            <%= publicacion.fecha_hora.getFullYear() %>/
-            <%= publicacion.fecha_hora.getMonth()+1 %>/
-            <%= publicacion.fecha_hora.getDate() %>
+            <%= publicacion.fecha_hora.getFullYear() %>/<%= publicacion.fecha_hora.getMonth()+1 %>/<%= publicacion.fecha_hora.getDate() %>
           </h6>
           <p>
             <%= publicacion.resumen %>
@@ -53,7 +52,7 @@
       <% }) %>
 
     </div>
-
+    <!--SECCION DE PAGINACION-->
     <div class="row">
       <div class="col-sm-12">
         <p class="centrado">

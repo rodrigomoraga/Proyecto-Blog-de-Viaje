@@ -4,6 +4,7 @@ const mysql = require('mysql')
 const bodyParser = require('body-parser')
 const session = require('express-session')
 const flash = require('express-flash')
+const fileUpload = require('express-fileupload')
 
 const rutasMiddleware = require('./routes/middleware')
 const rutasPublicas = require('./routes/publicas')
@@ -15,6 +16,7 @@ aplicacion.set("view engine", "ejs")
 aplicacion.use(session({ secret: 'token-muy-secreto', resave: true, saveUninitialized: true }));
 aplicacion.use(flash())
 aplicacion.use(express.static(__dirname +'/public'))
+aplicacion.use(fileUpload())
 
 aplicacion.use(rutasMiddleware)
 aplicacion.use(rutasPublicas)
