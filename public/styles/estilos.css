@@ -1,0 +1,9 @@
+body {
+  font-size: 14px;
+}
+.enlaces-registro{
+  float: right;
+  position: relative;
+  top: 14px;
+  right: 18px;
+}
