@@ -2,6 +2,15 @@ const express = require('express')
 const router = express.Router()
 const mysql = require('mysql')
 var path = require('path')
+const nodemailer = require('nodemailer')
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'cuenta.de.prueba.correo.1234@gmail.com',
+    pass: 'Cuenta!123'
+  }
+})
 
 var pool = mysql.createPool({
   connectionLimit: 20,
@@ -10,6 +19,17 @@ var pool = mysql.createPool({
   password: '1qazxsw2',
   database: 'blog_viajes'
 })
+
+function enviarCorreoBienvenida(email, nombre){
+  const opciones = {
+    from: 'cuenta.de.prueba.correo.1234@gmail.com',
+    to: email,
+    subject: 'Bienvenido al blog de viajes',
+    text: `Hola ${nombre}`
+  }
+  transporter.sendMail(opciones, (error, info) => {
+  });
+}
 
 router.get('/', (peticion, respuesta) => {
   pool.getConnection((err, connection) => {
@@ -109,12 +129,14 @@ router.post('/procesar_registro', (peticion, respuesta) => {
                                 WHERE id = ${connection.escape(id)}
                               `
                   connection.query(consultaAvatar, (error, filas, campos) => {
+                    enviarCorreoBienvenida(email, pseudonimo)
                     peticion.flash('mensaje', 'Usuario registrado con avatar')
                     respuesta.redirect('/registro')
                   })
                 })
               }
               else{
+                enviarCorreoBienvenida(email, pseudonimo)
                 peticion.flash('mensaje', 'Usuario registrado')
                 respuesta.redirect('/registro')
               }
@@ -206,6 +228,34 @@ router.get('/autores', (peticion, respuesta) => {
     })
 
 
+    connection.release()
+  })
+})
+
+router.get('/publicacion/:id/votar', (peticion, respuesta) => {
+  pool.getConnection((err, connection) => {
+    const consulta = `
+      SELECT *
+      FROM publicaciones
+      WHERE id = ${connection.escape(peticion.params.id)}
+    `
+    connection.query(consulta, (error, filas, campos) => {
+      if (filas.length > 0) {
+        const consultaVoto = `
+          UPDATE publicaciones
+          SET
+          votos = votos + 1
+          WHERE id = ${connection.escape(peticion.params.id)}
+        `
+        connection.query(consultaVoto, (error, filas, campos) => {
+          respuesta.redirect(`/publicacion/${peticion.params.id}`)
+        })
+      }
+      else {
+        peticion.flash('mensaje', 'Publicación inválida')
+        respuesta.redirect('/')
+      }
+    })
     connection.release()
   })
 })
