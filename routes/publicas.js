@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const mysql = require('mysql')
+var path = require('path')
 
 var pool = mysql.createPool({
   connectionLimit: 20,
@@ -38,7 +39,7 @@ router.get('/', (peticion, respuesta) => {
     }
     consulta = `
       SELECT
-      publicaciones.id id,titulo, resumen, fecha_hora, pseudonimo, votos
+      publicaciones.id id,titulo, resumen, fecha_hora, pseudonimo, votos, avatar
       FROM publicaciones
       INNER JOIN autores
       ON publicaciones.autor_id = autores.id
@@ -95,8 +96,28 @@ router.post('/procesar_registro', (peticion, respuesta) => {
                                 )
                               `
             connection.query(consulta, (error, filas, campos) => {
-              peticion.flash('mensaje', 'Usuario registrado')
-              respuesta.redirect('/registro')
+              //para saber si se subieron archivos
+              if(peticion.files && peticion.files.avatar){
+                const archivoAvatar = peticion.files.avatar
+                const id = filas.insertId
+                const nombreArchivo = `${id}${path.extname(archivoAvatar.name)}`
+                archivoAvatar.mv(`./public/avatars/${nombreArchivo}`, (error) => {
+                  const consultaAvatar = `
+                                UPDATE
+                                autores
+                                SET avatar = ${connection.escape(nombreArchivo)}
+                                WHERE id = ${connection.escape(id)}
+                              `
+                  connection.query(consultaAvatar, (error, filas, campos) => {
+                    peticion.flash('mensaje', 'Usuario registrado con avatar')
+                    respuesta.redirect('/registro')
+                  })
+                })
+              }
+              else{
+                peticion.flash('mensaje', 'Usuario registrado')
+                respuesta.redirect('/registro')
+              }
             })
           }
         })

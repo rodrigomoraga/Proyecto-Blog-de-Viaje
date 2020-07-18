@@ -20,37 +20,42 @@
     
         <div class="row">
     
-        <div class="col-sm-12">
-    
-            <% if (mensaje && mensaje.length > 0) { %>
-            <h4><span class="icon-info"></span>
-            <%=mensaje%></h4>
-            <% } %>
-    
-            <form action="/procesar_registro" method="POST">
-            <fieldset>
-                <legend>Nuevo autor</legend>
-                <p>
-                <label for="email">Email</label>
-                <br>
-                <input type="email" id="email" name="email" required="true" />
-                </p>
-                <p>
-                <label for="contrasena">Contrasena</label>
-                <br>
-                <input type="password" id="contrasena" name="contrasena" required="true" />
-                </p>
-                <p>
-                <label for="pseudonimo">Pseudónimo</label>
-                <br>
-                <input type="text" id="pseudonimo" name="pseudonimo" required="true" />
-                </p>
-                <p>
-                <input class="primary" type="submit" value="Continuar" />
-                </p>
-            </fieldset>
-            </form>
-        </div>
+            <div class="col-sm-12">
+        
+                <% if (mensaje && mensaje.length > 0) { %>
+                <h4><span class="icon-info"></span>
+                <%=mensaje%></h4>
+                <% } %>
+                <!--encType es para que el formulario admita archivos-->
+                <form action="/procesar_registro" method="POST" encType="multipart/form-data">
+                <fieldset>
+                    <legend>Nuevo autor</legend>
+                    <p>
+                    <label for="email">Email</label>
+                    <br>
+                    <input type="email" id="email" name="email" required="true" />
+                    </p>
+                    <p>
+                    <label for="contrasena">Contrasena</label>
+                    <br>
+                    <input type="password" id="contrasena" name="contrasena" required="true" />
+                    </p>
+                    <p>
+                    <label for="pseudonimo">Pseudónimo</label>
+                    <br>
+                    <input type="text" id="pseudonimo" name="pseudonimo" required="true" />
+                    </p>
+                    <p>
+                        <label for="avatar">Avatar</label>
+                        <br>
+                        <input type="file" id="avatar" name="avatar"/>
+                    </p>
+                    <p>
+                    <input class="primary" type="submit" value="Continuar" />
+                    </p>
+                </fieldset>
+                </form>
+            </div>
     
         </div>
     

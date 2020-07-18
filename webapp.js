@@ -16,7 +16,7 @@ aplicacion.set("view engine", "ejs")
 aplicacion.use(session({ secret: 'token-muy-secreto', resave: true, saveUninitialized: true }));
 aplicacion.use(flash())
 aplicacion.use(express.static(__dirname +'/public'))
-aplicacion.use(fileUpload())
+aplicacion.use(fileUpload({createParentPath: true}))
 
 aplicacion.use(rutasMiddleware)
 aplicacion.use(rutasPublicas)
