@@ -9,6 +9,7 @@ const fileUpload = require('express-fileupload')
 const rutasMiddleware = require('./routes/middleware')
 const rutasPublicas = require('./routes/publicas')
 const rutasPrivadas = require('./routes/privadas')
+const rutasApi = require('./routes/API')
 
 aplicacion.use(bodyParser.json())
 aplicacion.use(bodyParser.urlencoded({ extended: true }))
@@ -21,6 +22,7 @@ aplicacion.use(fileUpload({createParentPath: true}))
 aplicacion.use(rutasMiddleware)
 aplicacion.use(rutasPublicas)
 aplicacion.use(rutasPrivadas)
+aplicacion.use(rutasApi)
 
 aplicacion.listen(8080, function(){
   console.log("Servidor iniciado")
